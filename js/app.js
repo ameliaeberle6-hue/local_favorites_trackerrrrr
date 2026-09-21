@@ -1,4 +1,6 @@
-let myFavorite = {
+let console.log('app.js connected');
+
+myFavorite = {
     name: 'Starbucks on University Drive',
     category: 'coffee',
     rating: 5,
