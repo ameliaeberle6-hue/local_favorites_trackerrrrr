@@ -1,30 +1,14 @@
 const storageKey = 'local-favorites-tracker';
-const favoriteForm = document.getElementById('add-favorite-form');
+const form = document.getElementById('add-favorite-form');
 const favoritesList = document.getElementById('favorites-list');
 const searchInput = document.getElementById('search-input');
 const categoryFilter = document.getElementById('category-filter');
-
-const starterFavorite = {
-    id: 'starbucks-on-university-drive',
-    name: 'Starbucks on University Drive',
-    category: 'coffee',
-    rating: 5,
-    notes: 'Great study spot with fast wifi',
-    dateAdded: new Date().toLocaleDateString()
-};
 
 let favorites = loadFavorites();
 
 function loadFavorites() {
     try {
-        const savedFavorites = localStorage.getItem(storageKey);
-        if (savedFavorites === null) {
-            const initialFavorites = [starterFavorite];
-            localStorage.setItem(storageKey, JSON.stringify(initialFavorites));
-            return initialFavorites;
-        }
-
-        return JSON.parse(savedFavorites);
+        return JSON.parse(localStorage.getItem(storageKey)) || [];
     } catch (error) {
         return [];
     }
@@ -34,7 +18,41 @@ function saveFavorites() {
     localStorage.setItem(storageKey, JSON.stringify(favorites));
 }
 
-function renderFavorites() {
+function escapeHtml(value) {
+    return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
+
+function addFavorite(event) {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+    const name = formData.get('name').trim();
+    const category = formData.get('category');
+
+    if (!name || !category) {
+        return;
+    }
+
+    favorites.push({
+        id: Date.now().toString(),
+        name: name,
+        category: category,
+        rating: Number(formData.get('rating')),
+        notes: formData.get('notes').trim(),
+        dateAdded: new Date().toLocaleDateString()
+    });
+
+    saveFavorites();
+    form.reset();
+    displayFavorites();
+}
+
+function displayFavorites() {
     const searchTerm = searchInput.value.trim().toLowerCase();
     const selectedCategory = categoryFilter.value;
     const visibleFavorites = favorites.filter((favorite) => {
@@ -60,46 +78,21 @@ function renderFavorites() {
     }
 
     visibleFavorites.forEach((favorite) => {
-        const card = document.createElement('article');
-        card.className = 'favorite-card';
-        card.innerHTML = `
-            <h3>${escapeHtml(favorite.name)}</h3>
-            <p class="favorite-category">${escapeHtml(favorite.category)}</p>
-            <p>${'★'.repeat(Number(favorite.rating))}${'☆'.repeat(5 - Number(favorite.rating))}</p>
-            <p>${escapeHtml(favorite.notes || 'No notes added.')}</p>
-            <small>Added ${escapeHtml(favorite.dateAdded)}</small>
-            <button type="button" class="delete-button" data-id="${favorite.id}">Remove</button>
-        `;
-        favoritesList.appendChild(card);
+        favoritesList.innerHTML += `
+            <article class="favorite-card">
+                <h3>${escapeHtml(favorite.name)}</h3>
+                <span class="favorite-category">${escapeHtml(favorite.category)}</span>
+                <div class="favorite-rating">${'★'.repeat(Number(favorite.rating))}${'☆'.repeat(5 - Number(favorite.rating))}</div>
+                <p class="favorite-notes">${escapeHtml(favorite.notes || 'No notes added.')}</p>
+                <small>Added: ${escapeHtml(favorite.dateAdded)}</small>
+                <button type="button" class="delete-button" data-id="${favorite.id}">Remove</button>
+            </article>`;
     });
 }
 
-function escapeHtml(value) {
-    return String(value)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
-}
-
-favoriteForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const formData = new FormData(favoriteForm);
-
-    favorites.unshift({
-        id: Date.now().toString(),
-        name: formData.get('name').trim(),
-        category: formData.get('category'),
-        rating: Number(formData.get('rating')),
-        notes: formData.get('notes').trim(),
-        dateAdded: new Date().toLocaleDateString()
-    });
-
-    saveFavorites();
-    favoriteForm.reset();
-    renderFavorites();
-});
+form.addEventListener('submit', addFavorite);
+searchInput.addEventListener('input', displayFavorites);
+categoryFilter.addEventListener('change', displayFavorites);
 
 favoritesList.addEventListener('click', (event) => {
     if (!event.target.matches('.delete-button')) {
@@ -108,10 +101,7 @@ favoritesList.addEventListener('click', (event) => {
 
     favorites = favorites.filter((favorite) => favorite.id !== event.target.dataset.id);
     saveFavorites();
-    renderFavorites();
+    displayFavorites();
 });
 
-searchInput.addEventListener('input', renderFavorites);
-categoryFilter.addEventListener('change', renderFavorites);
-
-renderFavorites();
+displayFavorites();
