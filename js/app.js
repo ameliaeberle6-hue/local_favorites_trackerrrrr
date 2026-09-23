@@ -1,4 +1,4 @@
-let myFavorite = {
+const myFavorite = {
     name: 'Starbucks on University Drive',
     category: 'coffee',
     rating: 5,
@@ -10,8 +10,9 @@ let today = new Date().toLocaleDateString();
 console.log(today);
 
 console.log(myFavorite);
+console.log(myFavorite.name);
 
-let displayText = myFavorite.name + ' - Rating: ' + myFavorite.rating + '/5';
+const displayText = myFavorite.name + ' - Rating: ' + myFavorite.rating + '/5';
 console.log(displayText);
 
 console.log(typeof myFavorite.name);
@@ -25,21 +26,18 @@ let rating = 5;
 console.log(placeName + ' - ' + rating + '/5');
 console.log('⭐'.repeat(rating) + ' ' + placeName);
 
-// Functions
 function greetFavorite(placeName, rating) {
     console.log(placeName + ' has ' + rating + ' stars!');
 }
 greetFavorite('Starbucks', 5);
 
-// The DOM
 const nameInput = document.getElementById('name');
-console.log(nameInput.value);   // what the user typed
+console.log(nameInput.value);
 
-// Event Listeners
 const practiceForm = document.getElementById('add-favorite-form');
 
 function handleSubmit(event) {
-    event.preventDefault();   // stop the page reload
+    event.preventDefault();
     console.log('You typed: ' + nameInput.value);
 }
 
