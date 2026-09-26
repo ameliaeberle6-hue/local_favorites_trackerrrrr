@@ -31,6 +31,7 @@ img {
     --color-bg: #ffe0f8;
     --color-surface: #ffffff;
     --color-surface-alt: #f1f5f9;
+    --color-danger: #b42318;
 
     --space-sm: 0.5rem;
     --space-md: 1rem;
@@ -176,6 +177,11 @@ textarea {
    ========================== */
 button {
     font: inherit;
+}
+
+.btn-danger {
+    background-color: var(--color-danger);
+    color: var(--color-surface);
 }
 
 

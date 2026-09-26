@@ -52,32 +52,48 @@ function addFavorite(event) {
     displayFavorites();
 }
 
-function displayFavorites() {
-    const searchTerm = searchInput.value.trim().toLowerCase();
+function deleteFavorite(index) {
+    const favorite = favorites[index];
+    if (confirm(`Delete "${favorite.name}"?`)) {
+        favorites.splice(index, 1);   // remove 1 item at index
+        saveFavorites();
+        searchFavorites();            // re-render, keeping current filter
+    }
+}
+
+function searchFavorites() {
+    const searchText = searchInput.value.toLowerCase().trim();
     const selectedCategory = categoryFilter.value;
-    const visibleFavorites = favorites.filter((favorite) => {
-        const matchesSearch = [favorite.name, favorite.notes]
-            .join(' ')
-            .toLowerCase()
-            .includes(searchTerm);
-        const matchesCategory = selectedCategory === 'all'
-            || favorite.category === selectedCategory;
+
+    const filtered = favorites.filter(function(favorite) {
+        const matchesSearch = searchText === '' ||
+            favorite.name.toLowerCase().includes(searchText) ||
+            favorite.notes.toLowerCase().includes(searchText);
+        const matchesCategory = selectedCategory === 'all' ||
+            favorite.category === selectedCategory;
         return matchesSearch && matchesCategory;
     });
 
     favoritesList.innerHTML = '';
 
-    if (visibleFavorites.length === 0) {
+    if (favorites.length === 0) {
         const emptyMessage = document.createElement('p');
         emptyMessage.className = 'empty-message';
-        emptyMessage.textContent = favorites.length === 0
-            ? 'No favorites yet. Add your first favorite place above!'
-            : 'No favorites match your search.';
+        emptyMessage.textContent = 'No favorites yet. Add your first favorite place above!';
         favoritesList.appendChild(emptyMessage);
         return;
     }
 
-    visibleFavorites.forEach((favorite) => {
+    if (filtered.length === 0) {
+        const noMatchMessage = document.createElement('p');
+        noMatchMessage.className = 'empty-message';
+        noMatchMessage.textContent = 'No favorites match your search.';
+        favoritesList.appendChild(noMatchMessage);
+        return;
+    }
+
+    filtered.forEach(function(favorite) {
+        const index = favorites.indexOf(favorite);
         favoritesList.innerHTML += `
             <article class="favorite-card">
                 <h3>${escapeHtml(favorite.name)}</h3>
@@ -85,23 +101,19 @@ function displayFavorites() {
                 <div class="favorite-rating">${'★'.repeat(Number(favorite.rating))}${'☆'.repeat(5 - Number(favorite.rating))}</div>
                 <p class="favorite-notes">${escapeHtml(favorite.notes || 'No notes added.')}</p>
                 <small>Added: ${escapeHtml(favorite.dateAdded)}</small>
-                <button type="button" class="delete-button" data-id="${favorite.id}">Remove</button>
+                <button class="btn-danger" onclick="deleteFavorite(${index})">Delete</button>
             </article>`;
     });
 }
 
+function displayFavorites() {
+    searchInput.value = '';          // clear the search box
+    categoryFilter.value = 'all';    // back to All categories
+    searchFavorites();
+}
+
 form.addEventListener('submit', addFavorite);
-searchInput.addEventListener('input', displayFavorites);
-categoryFilter.addEventListener('change', displayFavorites);
-
-favoritesList.addEventListener('click', (event) => {
-    if (!event.target.matches('.delete-button')) {
-        return;
-    }
-
-    favorites = favorites.filter((favorite) => favorite.id !== event.target.dataset.id);
-    saveFavorites();
-    displayFavorites();
-});
+searchInput.addEventListener('input', searchFavorites);
+categoryFilter.addEventListener('change', searchFavorites);
 
 displayFavorites();
