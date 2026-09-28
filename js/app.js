@@ -1,21 +1,30 @@
-const storageKey = 'local-favorites-tracker';
+const storageKey = 'localFavorites';
 const form = document.getElementById('add-favorite-form');
 const favoritesList = document.getElementById('favorites-list');
 const searchInput = document.getElementById('search-input');
 const categoryFilter = document.getElementById('category-filter');
 
-let favorites = loadFavorites();
+let favorites = [];
 
 function loadFavorites() {
     try {
-        return JSON.parse(localStorage.getItem(storageKey)) || [];
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+            favorites = JSON.parse(saved);
+        } else {
+            favorites = [];
+        }
     } catch (error) {
-        return [];
+        favorites = [];
     }
 }
 
 function saveFavorites() {
-    localStorage.setItem(storageKey, JSON.stringify(favorites));
+    try {
+        localStorage.setItem(storageKey, JSON.stringify(favorites));
+    } catch (error) {
+        alert('Unable to save favorites. Storage may be disabled.');
+    }
 }
 
 function escapeHtml(value) {
@@ -116,4 +125,5 @@ form.addEventListener('submit', addFavorite);
 searchInput.addEventListener('input', searchFavorites);
 categoryFilter.addEventListener('change', searchFavorites);
 
+loadFavorites();
 displayFavorites();

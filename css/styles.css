@@ -23,12 +23,12 @@ img {
    2. DESIGN TOKENS
    ========================== */
 :root {
-    --color-accent: #c7f6f0;
-    --color-accent-strong: #321052;
+    --color-accent: #e497f3;
+    --color-accent-strong: #3cb58b;
     --color-text: #172033;
     --color-muted: #657186;
-    --color-border: #f9dcf8;
-    --color-bg: #ffe0f8;
+    --color-border: #ffa2f4;
+    --color-bg: #ffe4f8;
     --color-surface: #ffffff;
     --color-surface-alt: #f1f5f9;
     --color-danger: #b01414;
@@ -37,6 +37,8 @@ img {
     --space-md: 1rem;
     --space-lg: 1.5rem;
     --space-xl: 2rem;
+
+    --radius-md: 0.5rem;
 
     --text-base: 1rem;
     --text-h3: 1.25rem;
@@ -155,11 +157,9 @@ textarea {
     width: 100%;
     font: inherit;
     margin-bottom: var(--space-md);
-    padding: 0.7rem 0.75rem;
+    padding: var(--space-sm);
     border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
-    background: var(--color-surface);
-    color: var(--color-text);
+    border-radius: var(--radius-md);
 }
 
 textarea {
@@ -177,6 +177,19 @@ textarea {
    ========================== */
 button {
     font: inherit;
+    padding: var(--space-sm) var(--space-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: var(--color-accent);
+    color: var(--color-surface);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-accent-strong);
 }
 
 .btn-danger {
