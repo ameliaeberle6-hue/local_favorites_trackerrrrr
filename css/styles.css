@@ -28,7 +28,8 @@ img {
     --color-bg: #e6f4ff;
     --color-surface: #ffffff;
     --color-surface-alt: #f1f5f9;
-    --color-danger: #b01414;
+    --color-delete-bg: #209fef;
+    --color-danger: #0819b8;
 
     --space-sm: 0.5rem;
     --space-md: 1rem;
@@ -249,9 +250,13 @@ button {
     padding: 0.5rem 0.75rem;
     border: 1px solid var(--color-border);
     border-radius: 0.5rem;
-    background: var(--color-danger);
+    background: var(--color-delete-bg);
     color: var(--color-surface);
     cursor: pointer;
+}
+
+.delete-button:hover {
+    background: var(--color-danger);
 }
 
 .empty-message {
