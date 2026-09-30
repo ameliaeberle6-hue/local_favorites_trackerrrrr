@@ -110,7 +110,7 @@ function searchFavorites() {
                 <div class="favorite-rating">${'★'.repeat(Number(favorite.rating))}${'☆'.repeat(5 - Number(favorite.rating))}</div>
                 <p class="favorite-notes">${escapeHtml(favorite.notes || 'No notes added.')}</p>
                 <small>Added: ${escapeHtml(favorite.dateAdded)}</small>
-                <button class="btn-danger" onclick="deleteFavorite(${index})">Delete</button>
+                <button class="btn-danger delete-button" onclick="deleteFavorite(${index})">Delete</button>
             </article>`;
     });
 }
